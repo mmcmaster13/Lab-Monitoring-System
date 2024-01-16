@@ -1,4 +1,7 @@
 import numpy as np
+import statistics as stats
+
+from make_scope_return_useful_again import make_useful
 
 #algorithm paper: https://github.com/JQIamo/Scanning-Transfer-Cavity-Lock/blob/master/Algorithm.pdf
 #wider-scope paper: https://arxiv.org/pdf/1810.07256.pdf
@@ -81,6 +84,41 @@ def res_test(n_test, wait):
         time.sleep(wait)
 
     return peak_with_te
-        
-            
+
+def get_var(rigol, n_iterations):
+
+    var_positions = np.zeros(n_iterations)
+
+    #ask the scope how many points it's sending
+    n_points = int(rigol.query(":WAV:POIN?"))
+
+    #ask for where the origin is on the trace
+    x_origin = float(rigol.query(":WAV:XOR?"))
     
+    #ask for time difference between sampled points
+    x_inc = float(rigol.query(":WAV:XINC?"))
+        
+    for i in range(n_iterations):
+    
+        #ask for the trace data
+        data = rigol.query(":WAV:DATA?")
+
+        #turn the scope return into something actionable (split and cast to floats)
+        useful_data = make_useful(data, n_points)
+
+        #threshold the data, removing the noise away from the peaks
+        data_th = threshold_data(useful_data, n_points)
+
+        #take the derivatives of the curve at each set of ten points
+        derivatives = get_derivatives(data_th, n_points)
+
+        #find the peak locations using the derivatices
+        peak_locations_i = find_peaks(derivatives, n_points)
+
+        #calculate the variations in the peak position
+        var_positions[i] = peak_locations_i[0]*x_inc + x_origin
+
+        #calculate the variance in the differences of peak positions
+        calculated_var =  stats.variance(var_positions)
+
+    return calculated_var
