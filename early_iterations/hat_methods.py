@@ -18,15 +18,13 @@ for entry in board_list:
             
 #we really don't need to do anything fancier than this I don't think
             
-def get_potential_difference():
+def get_potential_difference(channel1, channel2):
     
-    toptica_v1 = board.a_in_read(0)
-    print(toptica_v1)
+    v1 = board.a_in_read(channel1)
     
-    toptica_v2 = board.a_in_read(1)
-    print(toptica_v2)
+    v2 = board.a_in_read(channel2)
     
-    differential = toptica_v1 - toptica_v2
+    differential = v1 - v2
     
     return differential
 
