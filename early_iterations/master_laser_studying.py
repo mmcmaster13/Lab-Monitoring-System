@@ -1,3 +1,5 @@
+#script used to set the threshold on the acceptable variance on the peak positions shown on the trace from the scanning FP cavity for the 780 master laser
+
 import pyvisa as visa
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,21 +17,31 @@ print(resources.list_resources())
 
 rigol = resources.open_resource('USB0::6833::1200::DS2D193902418::0::INSTR')
 
+#testing that we can communicate as expected
+
+#ask identity
 print(rigol.query("*IDN?"))
 
+#turn on channel 1
 rigol.write(":WAV:SOUR CHAN1")
 
 print(rigol.query(":WAV:SOUR?"))
 
+#ask for time scale of trace
 print(rigol.query(":TIM:SCAL?"))
 
+#ask for maximum number of points sampled in trace
 rigol.write(":WAV:MODE MAX")
 
 rigol.write(":WAV:FORM ASC")
 
+#ask for actual number of points in trace
 n_points = int(rigol.query(":WAV:POIN?"))
 
+#ask for where the origin is on the trace
 x_origin = float(rigol.query(":WAV:XOR?"))
+
+#ask for time difference between sampled points
 x_inc = float(rigol.query(":WAV:XINC?"))
 
 print("X origin:", x_origin, "s")
@@ -68,6 +80,8 @@ print("beginning collection")
         time.sleep(90)'''
 
 for i in range(3400):
+
+    #ask for the trace data
     data = rigol.query(":WAV:DATA?")
     
     useful_data = make_useful(data, n_points)
