@@ -14,6 +14,9 @@ from current_sensor import read_current
 
 status_count = [0,0,0]
 
+collector_address = "192.168.0.178"
+logger1_address = ""
+
 #then, we need to subscribe it to something called "logger1/inquiries"
 #so, this Pi will be listening for the master pi to request logger1 measurements
 
@@ -67,9 +70,9 @@ def on_message(client, userdata, msg):
     
     result_return = "value1:Main Chamber Pressure:1E-9:" + str(pressure) + ",value2:Yb Oven Temperature:400:" + str(temperature) + ",value3:Rb Supply Current:8:" + str(current)
     
-    #write to master; might want to change the name of the Pi from "logger1" to something more illustrative
+    #write to collector; might want to change the name of the Pi from "logger1" to something more illustrative
     
-    publish.single("logger1/results", result_return, hostname="192.168.0.184")
+    publish.single("logger1/results", result_return, hostname=collector_address)
     
 #initiate idle listener
 
@@ -77,6 +80,6 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.connect("192.168.0.185", 1883, 60)
+client.connect(logger1_address, 1883, 60)
 
 client.loop_forever()
