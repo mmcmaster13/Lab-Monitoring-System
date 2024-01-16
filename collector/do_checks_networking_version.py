@@ -5,18 +5,20 @@ def do_checks(labeled_data, thresholds, crit_counts):
     #we can make the measurers send thresholds every time; this is kind of the only way to do it
     #if we want to leave the collector out of everything
     
-    #I'm actually not sure how to handle crit_counts because it kind of needs to exist
-    #as something of an arbitrary size
-    
     if len(crit_counts) == 0:
         
         for key in labeled_data:
             crit_counts[key] = 0
     
     for key in labeled_data:
+
+        if key == "780 Cooling Status" or key == "780 Repump Status":
+            data = -labeled_data[key]
+            threshold = -thresholds[key]
+        else:
+            data = labeled_data[key]
+            threshold = thresholds[key]
         
-        data = labeled_data[key]
-        threshold = thresholds[key]
         crit_count = crit_counts[key]
         
         if data > threshold and crit_count < 20:
