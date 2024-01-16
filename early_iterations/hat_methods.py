@@ -18,7 +18,7 @@ for entry in board_list:
             
 #we really don't need to do anything fancier than this I don't think
             
-def toptica_get():
+def get_potential_difference():
     
     toptica_v1 = board.a_in_read(0)
     print(toptica_v1)
@@ -30,4 +30,4 @@ def toptica_get():
     
     return differential
 
-print("differential is ", toptica_get(), "V")
+#print("differential is ", get_potential_difference(), "V")
