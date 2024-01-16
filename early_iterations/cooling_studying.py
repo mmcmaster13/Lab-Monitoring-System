@@ -1,4 +1,4 @@
-from hat_methods import toptica_get
+from hat_methods import get_potential_difference
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,7 +17,7 @@ var_voltages = np.zeros(1800)
 s = np.arange(1800)
 
 for i in range(1800):
-    point = toptica_get()
+    point = get_potential_difference()
     var_voltages[i] = point
     time.sleep(0.1)
     
