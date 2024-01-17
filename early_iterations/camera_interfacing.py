@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 
 cam = cv2.VideoCapture(0)
 
+image_path = ""
+
 def show_image(image, title, path):
     
     cv2.imshow(title, image)
@@ -21,10 +23,9 @@ def show_image(image, title, path):
 def get_image():
     
     #this method will save a single image-- do we want to store it locally? probably not, let's not save it anywhere
-    #however, might want to write image to server
     
     result, image = cam.read()
-    cv2.imwrite("/home/tujuntian/Desktop/lock monitoring/pics/testimage.jpg", image)
+    cv2.imwrite(image_path, image)
     
     #cv2.imshow("test_image",image)
     
@@ -124,7 +125,7 @@ def find_center(xth, yth):
 
 def is_locked():
 
-    with Image.open("/home/tujuntian/Desktop/lock monitoring/pics/testimage.jpg") as im:
+    with Image.open(image_path) as im:
         
         im = im.convert("L")
             
