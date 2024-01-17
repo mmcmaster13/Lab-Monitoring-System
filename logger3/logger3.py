@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 
 import pyvisa as visa
-import hat_methods import get_potential_difference
+from hat_methods import get_potential_difference
 from peak_finding import get_var
 
 #for our purposes, we'll call this Pi logger3, which will be in charge of all the 780 lasers' lock statuses
