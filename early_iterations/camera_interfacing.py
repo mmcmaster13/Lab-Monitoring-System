@@ -34,29 +34,28 @@ def get_image():
     
     return image
 
-def blur(image):
+'''def blur(image, blur_path):
     
     gray_image = cv2.cvtColor(test_image, cv2.COLOR_BGR2GRAY)
 
 #now we've ensured the image is in gray scale (precaution)
-#it's going to be hard to cross-section if we can't locate the spot very nicely--
-#I think it's time to focus on blurring again
+#it's going to be hard to cross-section if we can't locate the spot very nicely
 
     blurred_image = cv2.blur(gray_image,(21,21))
     
-    show_image(blurred_image, "blurred","/home/tujuntian/Desktop/lock monitoring/pics/testimage_blurred.jpg") 
+    show_image(blurred_image, "blurred", blur_path) 
 
-    return blurred_image
+    return blurred_image'''
 
-def do_thresholding(image):
+def do_thresholding(image, th_path):
     
     result, thresholded_image = ret, thresh1 = cv2.threshold(image, 0.75*255, 255, cv2.THRESH_BINARY)
     
-    show_image(thresholded_image, "thresholded", "/home/tujuntian/Desktop/lock monitoring/pics/testimage_threshd.jpg")
+    show_image(thresholded_image, "thresholded",th_path)
     
     return thresholded_image
 
-def get_contours(image):
+'''def get_contours(image, ctr_path, obj_path):
     
     image = blur(image)
     
@@ -64,15 +63,15 @@ def get_contours(image):
     
     canny = cv2.Canny(image, 20,30)
     
-    show_image(canny, "post-Canny", "/home/tujuntian/Desktop/lock monitoring/pics/post_canny.jpg")
+    show_image(canny, "post-Canny", ctr_path)
     
     contours, hierarchy= cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     cv2.drawContours(test_image, contours, -1, (0,255,0), 2)
     
-    show_image(test_image, "objects found", "/home/tujuntian/Desktop/lock monitoring/pics/objects_found.jpg")
+    show_image(test_image, "objects found", obj_path)
     
-    return contours, hierarchy
+    return contours, hierarchy'''
 
 def plot_profiles(xth, x, yth, y):
         
@@ -123,32 +122,39 @@ def find_center(xth, yth):
     
     return center
 
-def is_locked():
+#need to see here if we can put the image collecting inside is_locked
+
+def is_locked(image_path):
 
     with Image.open(image_path) as im:
-        
+
+        #convert to grayscale for easy summation
         im = im.convert("L")
             
+   #turn the image into an array of numbers
     image_arr = np.asarray(im)
-    print(image_arr)
-    print(image_arr.shape)
+    
+    #print(image_arr)
+    #print(image_arr.shape)
     
     y = np.zeros(640)
     x = np.zeros(480)
     
     #summing
-    
+
+    #summing across columns (y)
     for i in range(640):
         y[i] = np.sum(image_arr[:, i])
-        
+
+    #summing across rows (x)
     for j in range(480):
         x[j] = np.sum(image_arr[j, :])
 
-    avg_x = np.mean(x)
-    avg_y = np.mean(y)
+    #avg_x = np.mean(x)
+    #avg_y = np.mean(y)
     
-    print(avg_x)
-    print(avg_y)
+    #print(avg_x)
+    #print(avg_y)
     
     #now, we have an x array and a y array which are the sums of whichever columns and rows
     #we can think of these as cross-sections
@@ -156,23 +162,28 @@ def is_locked():
     
     #we need to figure out how we want to make the diy threshold criterion
     #taking this to be the FWHM,
-    
+
+    #taking maxima of 1D sums
     og_max_x = np.max(x)
     og_max_y = np.max(y)
-    
+
+    #calculating FWHM threshold
     th_y = 0.5*og_max_y
     th_x = 0.5*og_max_x
 
+    #arrays for thresholded data
     yth = np.zeros(640)
     xth = np.zeros(480)
-    
+
+    #thresholding over y
     for i in range(640):
         
         if y[i] < th_y:
             yth[i] = 0
         else:
             yth[i] = og_max_y
-    
+
+    #thresholding over x
     for j in range(480):
         
         if x[j] < th_x:
@@ -181,15 +192,17 @@ def is_locked():
             xth[j] = og_max_x
     
     #this certainly didn't yield the results I was expecting (a lot of points remain nonzero)
+    #this might imply something about the resolution of the camera
     #let's plot them for fun
     
-    plot_profiles(xth, x, yth, y)
+    #plot_profiles(xth, x, yth, y)
     
-    #now let's figure out how to use the thresholded data to get some useful information out of it
-
+    #find the center of the profile
     center = find_center(xth, yth)
-    
-    if xth[center[0]] >= x_threshold & yth[center[1]] >= y_threshold:
+
+    #if the intensity at the center is greater than the FWHM in each direction, the laser is locked
+    #I think this needs some testing: what happens if 
+    if xth[center[0]] > x_threshold & yth[center[1]] > y_threshold:
         is_locked = 1
         print("laser is locked!")
     else:
@@ -197,11 +210,3 @@ def is_locked():
         print("laser is unlocked!")
         
     return is_locked
-
-test_image = get_image()
-
-show_image(test_image,"test image", "")
-
-is_locked()
-
-#should save an example test image eventually just so it exists somewhere
