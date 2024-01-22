@@ -4,9 +4,13 @@ import paho.mqtt.publish as publish
 import requests
 import time
 
+import datetime
+
 from Pi import Pi
 
 from do_checks_networking_version import do_checks
+
+collector_address = ""
 
 #this is going to have to be modified at the addition of each Pi but won't need to be touched again
 #probably should set up static IPs
@@ -57,7 +61,7 @@ client.on_message = on_message
 
 #we want to read off data sent to this machine, so the client IP address should
 #be the one for the collector (184)
-client.connect("192.168.0.184", 1883, 60)
+client.connect(collector_address, 1883, 60)
 
 client.loop_start()
 
@@ -68,7 +72,7 @@ while True:
         for pi in pis:
             #we want to write to the measurer so the hostname needs to be its IP (185)
             topic = pi.name + "/inquiries"
-            publish.single(topic, "data please <3", hostname = "192.168.0.185")
+            publish.single(topic, "data please <3", hostname = pi.address)
             print("data requested")
             
             #wait for reply (measurement timeout will be taken care of by measurers)
@@ -80,7 +84,9 @@ while True:
             
         #do_checks to make sure no one is out of line; manage discord messaging
         #updates crit_counts
-        crit_counts = do_checks(labeled_data, thresholds, crit_counts)
+            
+        #temporarily commenting out this line because we don't care about Discord atm
+        #crit_counts = do_checks(labeled_data, thresholds, crit_counts)
         
         #write to IFTTT
         print("IFTTT data: " , ifttt_data)
@@ -94,12 +100,12 @@ while True:
     except requests.exceptions.HTTPError as errh: 
         print("HTTP Error")
         print(errh.args[0])
-        print("occurred at: " + date_time)
+        print("occurred at: " + datetime.datetime.now())
       
     except requests.exceptions.ReadTimeout as errrt: 
         print("Time out")
-        print("occurred at: " + date_time)
+        print("occurred at: " + datetime.datetime.now())
       
     except requests.exceptions.ConnectionError as conerr: 
         print("Connection error")
-        print("occurred at: " + date_time)
+        print("occurred at: " + datetime.datetime.now())
