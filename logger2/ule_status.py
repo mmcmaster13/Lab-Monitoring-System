@@ -8,6 +8,13 @@ from PIL import Image
 
 import statistics as stats
 
+from Cavity import Cavity
+
+#0: 840
+#2: 1112
+#4:
+#6:
+
 def get_ule_status(cavity, image_path):
 
     t_end = time.time() + cavity.sample_time
@@ -28,6 +35,8 @@ def get_ule_status(cavity, image_path):
         result, image = cam.read()
         cv2.imwrite(image_path, image)
 
+        #cam.release()
+
 
         #I'm not sure what best practice for this situation is, i.e.
         #I don't know if I should keep cv2 open or close it all the time
@@ -46,20 +55,24 @@ def get_ule_status(cavity, image_path):
         #turn the image into an array of numbers
         image_arr = np.asarray(im)
 
-        intensity = image_arr[cavity.center]
+        intensity = image_arr[cavity.center[0], cavity.center[1]]
 
         points.append(intensity)
 
-    var = stats.variance(points)
+    var = np.var(points)
+    average_intensity = np.mean(points)
 
-    if var < cavity.threshold:
+    if var <= cavity.var_threshold and average_intensity >= cavity.i_threshold:
         is_locked = True
     else:
         is_locked = False
     
+    print(is_locked)
+
     return is_locked
 
-    
-            
+#testing get_ule_status with the 1112
 
+ule_1112 = Cavity(1112, 2, 200, 0.02, [163,256], 10)
 
+get_ule_status(ule_1112, "/home/rbyb/Desktop/test_image.jpg")

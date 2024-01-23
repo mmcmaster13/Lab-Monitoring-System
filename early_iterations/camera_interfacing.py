@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 #from find_indices import find_indices
 
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(2)
 
 image_path = "/home/rbyb/Desktop/test_image.jpg"
 
@@ -132,7 +132,7 @@ def find_center(xth, yth):
     for j in range(640):
         
         if yth[j] != 0:
-            y_indicies.append(j)
+            y_indices.append(j)
         else:
             continue
     
@@ -223,7 +223,7 @@ def is_locked(image_path):
 
     #if the intensity at the center is greater than the FWHM in each direction, the laser is locked
     #I think this needs some testing: what happens if 
-    if xth[center[0]] > x_threshold & yth[center[1]] > y_threshold:
+    if xth[center[0]] > th_x & yth[center[1]] > th_y:
         is_locked = 1
         print("laser is locked!")
     else:
