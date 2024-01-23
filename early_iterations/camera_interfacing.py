@@ -3,9 +3,28 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 
-cam = cv2.VideoCapture(0)
+#from find_indices import find_indices
 
-image_path = ""
+cam = cv2.VideoCapture(2)
+
+image_path = "/home/rbyb/Desktop/test_image.jpg"
+
+'''def returnCameraIndexes():
+    # checks the first 10 indexes.
+    index = 0
+    arr = []
+    i = 10
+    while i > 0:
+        cap = cv2.VideoCapture(index)
+        if cap.read()[0]:
+            arr.append(index)
+            cap.release()
+        index += 1
+        i -= 1
+    
+    print(arr)
+    
+    return arr'''
 
 def show_image(image, title, path):
     
@@ -31,6 +50,8 @@ def get_image():
     
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
+    
+    cam.release()
     
     return image
 
@@ -111,7 +132,7 @@ def find_center(xth, yth):
     for j in range(640):
         
         if yth[j] != 0:
-            y_indicies.append(j)
+            y_indices.append(j)
         else:
             continue
     
@@ -202,7 +223,7 @@ def is_locked(image_path):
 
     #if the intensity at the center is greater than the FWHM in each direction, the laser is locked
     #I think this needs some testing: what happens if 
-    if xth[center[0]] > x_threshold & yth[center[1]] > y_threshold:
+    if xth[center[0]] > th_x & yth[center[1]] > th_y:
         is_locked = 1
         print("laser is locked!")
     else:
@@ -210,3 +231,16 @@ def is_locked(image_path):
         print("laser is unlocked!")
         
     return is_locked
+
+'''valid_cams = find_indices()
+
+for index in valid_cams:
+    cam = cv2.VideoCapture(index)
+
+    image = get_image()
+    show_image(image, "test", image_path)
+    cv2.destroyAllWindows()'''
+
+image = get_image()
+show_image(image, "test", image_path)
+#cv2.destroyAllWindows()

@@ -28,4 +28,4 @@ def get_potential_difference(channel1, channel2):
     
     return differential
 
-#print("differential is ", get_potential_difference(), "V")
+#print("differential is ", get_potential_difference(), "V")import
