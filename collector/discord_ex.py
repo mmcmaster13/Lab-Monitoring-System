@@ -23,7 +23,7 @@ def post_alert(message):
 
         print(f'{client.user} is connected to the following guild:\n'f'{guild.name}(id:{guild.id})')
 
-        maintenance_channel = client.get_channel(978438215348420658)
+        maintenance_channel = client.get_channel()
         await maintenance_channel.send(message)
         
         print("sent")
