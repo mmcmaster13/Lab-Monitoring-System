@@ -47,7 +47,15 @@ IFTTT can be configured in a number of ways, but our iteration of the Lab Monito
 
 ## Posting messages to Discord with Python
 
+To get the Lab Monitoring System to send alerts to group members, we created a Discord bot that would post messages to a Discord channel depending on the results obtained by the collector Pi. Real Python has a great [tutorial](https://realpython.com/how-to-make-a-discord-bot-python/) on how to create a Discord bot and program its behavior in Python: it outlines all of the steps required to create the bot and introduces [discord.py](https://discordpy.readthedocs.io/en/stable/), an event-based library that we use to tell the bot what to do. Since the tutorial is so thorough, here we will just briefly outline the Discord workflow we use in our system.
 
+As the Collector Pi compiles the data, it checks each point against a threshold value we set. If the result collected exceeds the threshold enough consecutive times, the Collector Pi will call the function `post_alert` which takes the following steps
+
+- creates an instance of the Discord client
+- posts the alert to the appropriate Discord channel once the connection to Discord is established (the message is sent within the `on_ready` event.)
+- closes the instance of the Discord client
+
+Obviously, this procedure is not ideal if alerts need to be posted within quick succession, as opening the Discord client does take a non-trivial amount of time. However, the Lab Monitoring System is set up in such a way that alerts will not be posted regularly enough that this becomes meaningful. This opening/closing structure is necessary rather than keeping the client open in the background, because keeping the client runninng in the background will prevent data from being collected once it's opened for reasons we don't necessarily understand.
 
 ## Interfacing a Pi with an USB-equipped oscilloscope
 
