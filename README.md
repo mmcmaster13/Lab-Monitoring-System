@@ -55,7 +55,7 @@ As the Collector Pi compiles the data, it checks each point against a threshold 
 - posts the alert to the appropriate Discord channel once the connection to Discord is established (the message is sent within the `on_ready` event.)
 - closes the instance of the Discord client
 
-Obviously, this procedure is not ideal if alerts need to be posted within quick succession, as opening the Discord client does take a non-trivial amount of time. However, the Lab Monitoring System is set up in such a way that alerts will not be posted regularly enough that this becomes meaningful. This opening/closing structure is necessary rather than keeping the client open in the background, because keeping the client runninng in the background will prevent data from being collected once it's opened for reasons we don't necessarily understand.
+Obviously, this procedure is not ideal if alerts need to be posted within quick succession, as opening the Discord client does take a non-trivial amount of time. However, the Lab Monitoring System is set up in such a way that alerts will not be posted regularly enough that this becomes meaningful. This opening/closing structure is necessary because keeping the client runninng in the background will prevent data from being collected once it's opened for reasons we don't necessarily understand. 
 
 ## Interfacing a Pi with an USB-equipped oscilloscope
 
