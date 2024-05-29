@@ -8,15 +8,18 @@ import datetime
 
 from Pi import Pi
 
-from do_checks_networking_version import do_checks
+#from do_checks_networking_version import do_checks
 
-collector_address = ""
+collector_address = "192.168.0.194"
 
 #this is going to have to be modified at the addition of each Pi but won't need to be touched again
 #probably should set up static IPs
-logger1 = Pi("logger1", "192.168.0.185")
+logger1 = Pi("logger1", "192.168.0.193")
+logger2 = Pi("logger2","192.168.0.197")
+logger3 = Pi("logger3", "192.168.0.185")
+logger4 = Pi("logger4","192.168.0.175")
 
-pis = [logger1]
+pis = [logger1, logger2, logger3, logger4]
 
 ifttt_data = {}
 labeled_data = {}
