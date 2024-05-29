@@ -21,10 +21,7 @@ logger4 = Pi("logger4","192.168.0.175")
 
 pis = [logger1, logger2, logger3, logger4]
 
-ifttt_data = {}
-labeled_data = {}
 thresholds = {}
-
 crit_counts = {}
 
 reply = ""
