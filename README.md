@@ -39,7 +39,7 @@ The first line tells Mosquitto to listen on port 1883 (this is the default, but 
 
 `sudo mosquitto -c /etc/mosquitto/conf.d/custom.conf`
 
-Now, we can start writing Python scripts using `paho-mqtt` to send information back and forth between the Pis.
+Now, we can start writing Python scripts using `paho-mqtt` to send information back and forth between the Pis. Notice that the Mosquitto sessions do not close with restart, so you shouldn't need to repeat this process too often unless you explicitly kill the process.
 
 ## Working with IFTTT
 
