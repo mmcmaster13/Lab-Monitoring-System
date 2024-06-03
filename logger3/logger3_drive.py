@@ -7,6 +7,9 @@ import pyvisa as visa
 from hat_methods import get_potential_difference
 from peak_finding import get_var
 
+#from datetime import date
+import datetime
+
 from spreadsheet_managing import write_locally, push_to_drive
 
 #for our purposes, we'll call this Pi logger3, which will be in charge of all the 780 lasers' lock statuses
@@ -15,20 +18,22 @@ resources = visa.ResourceManager("@py")
 print(resources.list_resources())
 
 #need to confirm this before running
-rigol = resources.open_resource("")
+rigol = resources.open_resource('USB0::6833::1200::DS2D193902418::0::INSTR')
 
-collector_address = ""
-logger3_address = ""
+collector_address = "192.168.0.194"
+logger3_address = "192.168.0.185"
 
 status_count = [0,0,0]
 
-fields = ["780 Master Status", "780 Cooling Status", "780 Repump Status"]
-source_path_stem = ""
+fields = ['Time','780 Master Status', '780 Cooling Status', '780 Repump Status']
+source_path_stem = r'/media/rbyb/C490-B476/'
+#header_flag = True
+
 header_flag = True
-
 path = ""
+now = datetime.date.today()
 
-destination_path_stem = ""
+destination_path_stem = r'/home/rbyb/mnt/gdrive/Lab Monitoring System/Rb MOT Pi/'
 
 #then, we need to subscribe it to something called "logger1/inquiries"
 #so, this Pi will be listening for the master pi to request logger1 measurements
@@ -43,9 +48,14 @@ def on_connect(client, userdata, flags, rc):
     
 def on_message(client, userdata, msg):
     
+    global header_flag
+    global now
+    
     print(msg.topic+" "+str(msg.payload))
     
-    if msg.payload == "data please <3":
+    payload = msg.payload.decode("utf-8")
+    
+    if payload == "data please <3":
     
         try:
             m_status = get_var(rigol, 300)
@@ -76,17 +86,26 @@ def on_message(client, userdata, msg):
         c_status = random.randrange(1)
         r_status = random.randrange(2)'''
         
-        result_return = {"780 Master Status": m_status, "780 Cooling Status": c_status, "780 Repump Status": r_status}
+        now = datetime.date.today()
+        time = datetime.datetime.now()
+        stime = time.strftime("%c")
+        
+        result_return = [{'Time': stime, '780 Master Status': m_status, '780 Cooling Status': c_status, '780 Repump Status': r_status}]
 
         #write to spreadsheet
-        header_flag, path, now = write_locally(result_return, fields, source_path_stem, header_flag)
+        #header_flag, path, now = write_locally(result_return, fields, source_path_stem, header_flag)
+        write_locally(result_return, fields, source_path_stem, header_flag)
+        
+        header_flag = False
+        
+        print("written locally!")
+        
         
         #write to collector
-        
-        publish.single("logger3/results", result_return, hostname=collector_address)
+        #publish.single("logger3/results", {'780 Master Status': m_status, '780 Cooling Status': c_status, '780 Repump Status': r_status}, hostname=collector_address)
 
     else:
-        push_to_drive(path, now, destination_path_stem)
+        push_to_drive(source_path_stem, now, destination_path_stem)
     
 #initiate idle listener
 
