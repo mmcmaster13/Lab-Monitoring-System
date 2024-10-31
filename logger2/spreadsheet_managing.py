@@ -46,17 +46,18 @@ def write_locally(point, fields, source_path_stem, header_flag):
  
     #yeehaw?
 
-def push_to_drive(source_path, now, destination_path_stem):
+def push_to_drive(source_path_stem, now, destination_path_stem):
 
     #for setting up the Drive,
     #https://forums.raspberrypi.com/viewtopic.php?t=335856
 
     #for writing,
 
-    destination_path = destination_path_stem + date.isoformat(now) + ".csv"
+    destination_path = destination_path_stem + date.isoformat(now) + r'.csv'
+    source_path = source_path_stem + date.isoformat(now) + r'.csv'
 
-    if not os.path.exists(destination_path):
-        os.makedirs(os.path.join(destination_path))
+    '''if not os.path.exists(destination_path):
+        os.makedirs(os.path.join(destination_path))'''
 
     if os.path.exists(source_path):
         shutil.copyfile(source_path, destination_path)
